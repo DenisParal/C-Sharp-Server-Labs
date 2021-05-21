@@ -93,9 +93,9 @@ namespace SocketTCPServer
         protected override void ServerWork()
         {
             socket.Listen(1);
-            if(socket.Connected)
+            Socket handler = socket.Accept();
+            if (handler.Connected)
             {
-                Socket handler = socket.Accept();
                 StringBuilder builder = new StringBuilder();
                 int bytes = 0;
                 byte[] data = new byte[256];
