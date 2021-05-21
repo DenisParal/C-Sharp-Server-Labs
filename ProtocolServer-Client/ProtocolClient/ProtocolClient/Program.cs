@@ -7,7 +7,7 @@ namespace ProtocolClient
 {
     class Program
     {
-        static int port = 8081;
+        static int port = 8080;
         static string address = "127.0.0.1";
         public static void sendMeta(Socket socket)
         {

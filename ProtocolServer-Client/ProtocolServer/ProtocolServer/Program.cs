@@ -52,7 +52,7 @@ namespace ProtocolServer
     {
         static void Main(string[] args)
         {
-            ProtocolServer server = new ProtocolServer("127.0.0.1",8081);
+            ProtocolServer server = new ProtocolServer();
             server.Start(1);
         }
     }
