@@ -7,7 +7,7 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 
-namespace SocketTCPServer
+namespace ServerUtils
 {
     abstract class Server
     {
@@ -39,7 +39,7 @@ namespace SocketTCPServer
                 serverCondition = true;
                 socket.Listen(usersCount);
                 thread.Start();
-                Console.WriteLine("Server is running on: " + IP.ToString() + ":" + Port.ToString());
+                Console.WriteLine("Server is running on: "+IP.ToString()+":"+Port.ToString());
             }
             catch (Exception ex)
             {
@@ -54,7 +54,7 @@ namespace SocketTCPServer
         public IPAddress IP
         {
             get { return ipPoint.Address; }
-            set { if (!serverCondition) { ipPoint.Address = value; } }
+            set { if(!serverCondition) { ipPoint.Address = value; } }
         }
         public int Port
         {
@@ -63,11 +63,10 @@ namespace SocketTCPServer
         }
         private void Run()
         {
-            handler = socket.Accept();
             while (serverCondition)
             {
                 mutex.WaitOne();
-                if (!serverCondition)
+                if(!serverCondition)
                 {
                     mutex.ReleaseMutex();
                     return;
@@ -77,13 +76,38 @@ namespace SocketTCPServer
                 Thread.Sleep(1);
             }
         }
+        
         protected abstract void ServerWork();
 
         private Mutex mutex = new Mutex();
-        protected Socket handler;
         protected IPEndPoint ipPoint;
         protected Socket socket;
         protected bool serverCondition = false;
         protected Thread thread;
+    }
+    abstract class NetStream
+    {
+        public static String RecieveMessage(Socket handler)
+        {
+            StringBuilder builder = new StringBuilder();
+            int bytes = 0;
+            byte[] data = new byte[256];
+            do
+            {
+                if(!handler.Connected)
+                {
+                    break;
+                }
+                bytes = handler.Receive(data);
+                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            }
+            while (handler.Available > 0);
+            return builder.ToString();
+        }
+        public static void SendMessage(Socket handler, String message)
+        {
+            byte[] data = Encoding.Unicode.GetBytes(message);
+            handler.Send(data);
+        }
     }
 }

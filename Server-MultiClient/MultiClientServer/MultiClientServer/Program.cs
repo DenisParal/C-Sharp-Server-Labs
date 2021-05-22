@@ -19,37 +19,38 @@ namespace MultiClientServer
                 this.handler = handler;
                 thread.Start(handler);
             }
-            protected void Work(object handler)
+            protected void Work(object obj)
             {
+                Socket handler = (Socket)obj;
                 String exitWord = "Exit";
-                while (((Socket)handler).Connected)
+                while (handler.Connected)
                 {
                     StringBuilder builder = new StringBuilder();
                     int bytes = 0;
                     byte[] data = new byte[256];
                     do
                     {
-                        if (!((Socket)handler).Connected)
+                        if (!handler.Connected)
                         {
                             break;
                         }
-                        bytes = ((Socket)handler).Receive(data);
+                        bytes = handler.Receive(data);
                         builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
                     }
-                    while (((Socket)handler).Available > 0);
+                    while (handler.Available > 0);
                     Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
                     string message = builder.ToString();
                     if (message == exitWord)
                     {
                         data = Encoding.Unicode.GetBytes("Canceling connection...");
-                        ((Socket)handler).Send(data);
-                        ((Socket)handler).Shutdown(SocketShutdown.Both);
-                        ((Socket)handler).Close();
+                        handler.Send(data);
+                        handler.Shutdown(SocketShutdown.Both);
+                        handler.Close();
                     }
                     else
                     {
                         data = Encoding.Unicode.GetBytes(message);
-                        ((Socket)handler).Send(data);
+                        handler.Send(data);
                     }
                 }
             }
@@ -74,12 +75,12 @@ namespace MultiClientServer
             }
             if(users.Count < threadCount)
             {
-                users.Add(new userThread("Thread", handler)); // TODO: make thread name generic
+                users.Add(new userThread("Thread", handler));
             }
         }
         
         protected int threadCount;
-        protected List<userThread> users;
+        protected List<userThread> users = new List<userThread>();
     }
     class Program
     {

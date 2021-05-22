@@ -63,7 +63,6 @@ namespace ServerUtils
         }
         private void Run()
         {
-            handler = socket.Accept();
             while (serverCondition)
             {
                 mutex.WaitOne();
