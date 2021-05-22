@@ -31,6 +31,10 @@ namespace ChatClient
                     int bytes = 0;
                     do
                     {
+                        if(!socket.Connected)
+                        {
+                            break;
+                        }
                         bytes = socket.Receive(data, data.Length, 0);
                         builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
                     }
@@ -81,7 +85,7 @@ namespace ChatClient
         {
             List<String> data = reciever.Get();
             String result = "";
-            foreach(var line in data)
+            foreach (var line in data)
             {
                 result += line + "\n";
             }

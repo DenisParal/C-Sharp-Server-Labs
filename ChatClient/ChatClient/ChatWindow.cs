@@ -13,6 +13,31 @@ namespace ChatClient
 {
     public partial class ChatClient : Form
     {
+        class Reciever
+        {
+            public Reciever(ChatClient form)
+            {
+                thread = new Thread(Work);
+                thread.Start(form);
+            }
+            private void Work(object obj)
+            {
+                ChatClient form = (ChatClient)obj;
+                while (form.client.Connected)
+                {
+                    form.ChatBox.Invoke((MethodInvoker)delegate
+                    {
+                        form.ChatBox.Text += form.client.RecieveMessage();
+                    });
+                }
+                Thread.Sleep(10);
+            }
+            public void Stop()
+            {
+                thread.Join();
+            }
+            private Thread thread;
+        }
         public ChatClient()
         {
             InitializeComponent();
@@ -22,7 +47,6 @@ namespace ChatClient
         {
             client.SendMessage(MessageBox.Text);
             Thread.Sleep(1);
-            ChatBox.Text += client.RecieveMessage();
             MessageBox.Clear();
         }
 
@@ -34,6 +58,7 @@ namespace ChatClient
             this.Enabled = false;
         }
 
+        Reciever rec;
         RegistrationWindow reg;
         Client client;
 
@@ -50,7 +75,7 @@ namespace ChatClient
             {
                 client = new Client(reg.Login);
                 client.Connect(reg.IP, Int32.Parse(reg.Port));
-                ChatBox.Text += client.RecieveMessage();
+                rec = new Reciever(this);
             }
         }
     }

@@ -107,7 +107,10 @@ namespace ServerUtils
         public static void SendMessage(Socket handler, String message)
         {
             byte[] data = Encoding.Unicode.GetBytes(message);
-            handler.Send(data);
+            if(handler.Connected)
+            {
+                handler.Send(data);
+            }
         }
     }
 }
