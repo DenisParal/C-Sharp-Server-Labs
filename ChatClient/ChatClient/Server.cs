@@ -73,6 +73,7 @@ namespace ServerUtils
                 }
                 ServerWork();
                 mutex.ReleaseMutex();
+                Thread.Sleep(1);
             }
         }
         

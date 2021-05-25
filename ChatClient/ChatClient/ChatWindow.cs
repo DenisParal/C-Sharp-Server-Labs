@@ -30,7 +30,6 @@ namespace ChatClient
                         form.ChatBox.Text += form.client.RecieveMessage();
                     });
                 }
-                Thread.Sleep(10);
             }
             public void Stop()
             {
@@ -76,6 +75,15 @@ namespace ChatClient
                 client = new Client(reg.Login);
                 client.Connect(reg.IP, Int32.Parse(reg.Port));
                 rec = new Reciever(this);
+            }
+        }
+
+        private void ChatClient_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(client!=null)
+            {
+                client.Disconnect();
+                rec.Stop();
             }
         }
     }

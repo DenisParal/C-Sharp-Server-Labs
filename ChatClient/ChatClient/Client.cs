@@ -24,24 +24,32 @@ namespace ChatClient
                 Socket socket = (Socket)obj;
                 byte[] data;
                 StringBuilder builder;
-                while (socket.Connected)
+                while (ServerUtils.NetStream.IsConnected(socket))
                 {
                     data = new byte[256];
                     builder = new StringBuilder();
                     int bytes = 0;
-                    do
+                    try
                     {
-                        if(!socket.Connected)
+                        do
                         {
-                            break;
+                            if (!ServerUtils.NetStream.IsConnected(socket))
+                            {
+                                break;
+                            }
+                            bytes = socket.Receive(data, data.Length, 0);
+                            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
                         }
-                        bytes = socket.Receive(data, data.Length, 0);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        while (socket.Available > 0);
                     }
-                    while (socket.Available > 0);
+                    catch(SocketException)
+                    {
+                        break;
+                    }
                     mutex.WaitOne();
                     messageList.Add(builder.ToString());
                     mutex.ReleaseMutex();
+                    Thread.Sleep(200);
                 }
             }
             public List<String> Get()
@@ -78,8 +86,12 @@ namespace ChatClient
         }
         public void Disconnect()
         {
-            socket.Disconnect(true);
-            reciever.Stop();
+            if(Connected)
+            {
+                SendMessage("/Exit");
+                socket.Disconnect(true);
+                reciever.Stop();
+            }
         }
         public String RecieveMessage()
         {
@@ -93,8 +105,11 @@ namespace ChatClient
         }
         public void SendMessage(String message)
         {
-            byte[] sentData = Encoding.Unicode.GetBytes(message);
-            socket.Send(sentData);
+            if(socket.Connected)
+            {
+                byte[] sentData = Encoding.Unicode.GetBytes(message);
+                socket.Send(sentData);
+            }
         }
         public bool Connected
         {

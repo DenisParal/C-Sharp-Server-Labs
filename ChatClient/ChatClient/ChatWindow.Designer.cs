@@ -78,12 +78,14 @@ namespace ChatClient
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(462, 580);
+            this.ControlBox = false;
             this.Controls.Add(this.LeaveBut);
             this.Controls.Add(this.SendBut);
             this.Controls.Add(this.MessageBox);
             this.Controls.Add(this.ChatBox);
             this.Name = "ChatClient";
             this.Text = "Chat";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ChatClient_FormClosing);
             this.Load += new System.EventHandler(this.ChatClient_Load);
             this.EnabledChanged += new System.EventHandler(this.ChatClient_EnabledChanged);
             this.ResumeLayout(false);
