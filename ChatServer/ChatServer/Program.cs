@@ -22,6 +22,7 @@ namespace ChatServer
 
                 userLogin = NetStream.RecieveMessage(handler);
                 Send(userLogin + " joined the chat");
+                NetStream.SendMessage(handler, "Привет, " + userLogin);
                 thread.Start(handler);
             }
             protected void Work(object obj)
@@ -32,7 +33,6 @@ namespace ChatServer
                 while (NetStream.IsConnected(handler))
                 {
                     string message = NetStream.RecieveMessage(handler);
-                    Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + message);
                     
                     if (message == exitWord)
                     {
@@ -45,7 +45,8 @@ namespace ChatServer
                     }
                     else
                     {
-                        message = DateTime.Now.ToShortDateString() + " <" + userLogin + ">: " + message;
+                        message = DateTime.Now.ToShortTimeString() + " <" + userLogin + ">: " + message;
+                        Console.WriteLine(message);
                         Send(message);
                     }
                 }
@@ -74,11 +75,11 @@ namespace ChatServer
             protected String userLogin;
         }
 
-        public ChatServer(String IP = "127.0.0.1", int Port = 8080, int threadCount = 2) : base(IP, Port) 
+        public ChatServer(String IP = "127.0.0.1", int Port = 8080, int threadCount = 4) : base(IP, Port) 
         { 
             this.threadCount = threadCount;
         }
-        public ChatServer(IPAddress IP, int Port = 8080, int threadCount = 2) : base(IP, Port)
+        public ChatServer(IPAddress IP, int Port = 8080, int threadCount = 4) : base(IP, Port)
         {
             this.threadCount = threadCount;
         }
@@ -111,7 +112,7 @@ namespace ChatServer
         static void Main(string[] args)
         {
             ChatServer server = new ChatServer();
-            server.Start(2);
+            server.Start(4);
         }
     }
 }

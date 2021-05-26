@@ -11,9 +11,9 @@ namespace ChatClient
 {
     class Client
     {
-        class Reciever
+        class Receiver
         {
-            public Reciever(Socket socket)
+            public Receiver(Socket socket)
             {
                 this.socket = socket;
                 thread = new Thread(Work);
@@ -49,7 +49,6 @@ namespace ChatClient
                     mutex.WaitOne();
                     messageList.Add(builder.ToString());
                     mutex.ReleaseMutex();
-                    Thread.Sleep(200);
                 }
             }
             public List<String> Get()
@@ -64,7 +63,7 @@ namespace ChatClient
             {
                 thread.Join();
             }
-            ~Reciever()
+            ~Receiver()
             {
                 Stop();
             }
@@ -82,7 +81,7 @@ namespace ChatClient
             IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(IP), Port);
             socket.Connect(ipPoint);
             SendMessage(login);
-            reciever = new Reciever(socket);
+            receiver = new Receiver(socket);
         }
         public void Disconnect()
         {
@@ -90,12 +89,12 @@ namespace ChatClient
             {
                 SendMessage("/Exit");
                 socket.Disconnect(true);
-                reciever.Stop();
+                receiver.Stop();
             }
         }
         public String RecieveMessage()
         {
-            List<String> data = reciever.Get();
+            List<String> data = receiver.Get();
             String result = "";
             foreach (var line in data)
             {
@@ -115,7 +114,7 @@ namespace ChatClient
         {
             get { return socket.Connected; }
         }
-        Reciever reciever;
+        Receiver receiver;
         private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private String login;
     }

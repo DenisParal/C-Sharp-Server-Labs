@@ -29,7 +29,7 @@ namespace ProtocolClient
 
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket.Connect(ipPoint);
-                sendMeta(socket);
+                //sendMeta(socket);
                 while (socket.Connected)
                 {
                     byte[] data = new byte[256];

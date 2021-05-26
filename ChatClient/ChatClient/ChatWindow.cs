@@ -13,9 +13,9 @@ namespace ChatClient
 {
     public partial class ChatClient : Form
     {
-        class Reciever
+        class Receiver
         {
-            public Reciever(ChatClient form)
+            public Receiver(ChatClient form)
             {
                 thread = new Thread(Work);
                 thread.Start(form);
@@ -57,7 +57,7 @@ namespace ChatClient
             this.Enabled = false;
         }
 
-        Reciever rec;
+        Receiver rec;
         RegistrationWindow reg;
         Client client;
 
@@ -74,7 +74,7 @@ namespace ChatClient
             {
                 client = new Client(reg.Login);
                 client.Connect(reg.IP, Int32.Parse(reg.Port));
-                rec = new Reciever(this);
+                rec = new Receiver(this);
             }
         }
 
